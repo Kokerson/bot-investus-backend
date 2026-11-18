@@ -1,0 +1,30 @@
+name: Tygodniowy Raport Inwestycyjny
+
+on:
+  schedule:
+    - cron: "0 8 * * 6" # Uruchamia się w każdą sobotę o 8:00 UTC (9:00 lub 10:00 w Polsce)
+  workflow_dispatch: # Pozwala odpalić bota ręcznie z poziomu strony GitHuba
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pobranie kodu
+        uses: actions/checkout@v3
+
+      - name: Instalacja Pythona
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Instalacja bibliotek
+        run: pip install -r requirements.txt
+
+      - name: Uruchomienie Bota
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python bot.py
